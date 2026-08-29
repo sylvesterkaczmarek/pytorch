@@ -159,10 +159,16 @@ class Upsample(Module):
         super().__init__()
         self.name = type(self).__name__
         self.size = size
-        if isinstance(scale_factor, tuple):
-            self.scale_factor = tuple(float(factor) for factor in scale_factor)
-        else:
-            self.scale_factor = float(scale_factor) if scale_factor else None
+        try:
+            if isinstance(scale_factor, tuple):
+                self.scale_factor = tuple(float(factor) for factor in scale_factor)
+            else:
+                self.scale_factor = float(scale_factor) if scale_factor else None
+        except (TypeError, ValueError):
+            raise TypeError(
+                "scale_factor must be a float or a tuple of floats, "
+                f"but got scale_factor={scale_factor!r}"
+            ) from None
         self.mode = mode
         self.align_corners = align_corners
         self.recompute_scale_factor = recompute_scale_factor
